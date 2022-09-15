@@ -1,1 +1,6 @@
 
+.wrapper {
+	background-color: beige;
+	height: 100vh;
+	overflow: hidden;
+}

@@ -1,0 +1,45 @@
+.form {
+	text-align: center;
+    margin-top: 30px;
+}
+
+.form h1 {
+	font-family: "Comfortaa", cursive;
+    color: brown;
+    font-weight: bold;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.form p {
+    font-family: "Comfortaa", cursive;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.form-group {
+    margin: 20px 0;
+}
+
+.form .input {
+    padding: 10px 20px;
+    margin: 20px 0;
+}
+
+.form .button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: brown;
+    border: none;
+    cursor: pointer;
+}
+
+.form .button:hover {
+    background-color: brown !important;
+    opacity: 0.8;
+}
+
+.button--create {
+    margin: 20px 0;
+    background-color: lightseagreen !important;
+}
