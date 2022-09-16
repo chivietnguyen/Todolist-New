@@ -27,3 +27,41 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+.cat-avatar {
+    width: 35px;
+    height:35px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.cat-avatar img {
+    width: 100%;
+}
+
+.user--display {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn--logout {
+    background-color: transparent !important;
+    border: none !important;
+    font-weight: bold !important;
+    transition: 0.3s ease;
+}
+
+.btn--logout:hover {
+    background-color: white !important;
+    color: brown !important;
+    transform: scale(1.1);
+}
+
+.username {
+    margin: 0 !important;
+}
+
+.username:hover {
+    text-decoration: underline;
+}

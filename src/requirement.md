@@ -1,7 +1,7 @@
 Làm site quản lý Todo
 
 - Chức năng: 
-1. Log in/ Log out / Register
+1. Log in/ Log out / Register (Ok)
 2. Edit personal info
 4. Delete account
 5. add, delete, edit category and Task
@@ -11,7 +11,7 @@ API spec:  https://www.task-manager.api.mvn-training.com/spec/?fbclid=IwAR0PgrnM
 
 CSS thì dùng Bootstrap
 
-Khi đăng nhập => lưu JWT token vào localStorage, khi reload page vẫn giữ trạng thái đăng nhập, chỉ khi đăng xuất mới xóa JWT token
+Khi đăng nhập => lưu JWT token vào localStorage, khi reload page vẫn giữ trạng thái đăng nhập, chỉ khi đăng xuất mới xóa JWT token (Ok)
 
 Ở trạng thái danh sách category, task chỉ cần làm phân trang (dựa vào key meta và links)
 
