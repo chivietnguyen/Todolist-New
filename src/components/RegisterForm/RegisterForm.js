@@ -39,7 +39,6 @@ export default function RegisterForm() {
 		const result = USER_REGEX.test(username);
 		setValidName(result);
 	}, [username]);
-
 	// Auto validate password and confirm password
 	useEffect(() => {
 		const result = password ? password.length >= 6 : false;
