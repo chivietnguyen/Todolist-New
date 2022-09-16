@@ -13,6 +13,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginForm />} />
       </Routes>
     </div>
   );
