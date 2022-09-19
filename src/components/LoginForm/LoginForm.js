@@ -41,7 +41,7 @@ export default function LoginForm() {
 		e.preventDefault();
 
 		const v1 = USER_REGEX.test(username);
-		const v2 = password ? password.length >= 6 : false;
+		const v2 = password ? checkPassword(password) : false;
 
 		if (!v1 || !v2) {
 			setErrMsg("Invalid Entry");
