@@ -4,12 +4,11 @@ import { Button } from "react-bootstrap";
 import "./Header.css";
 
 export default function Header() {
-	
-	const username = JSON.parse(localStorage.getItem("user"))?.username || '';
-	
+	const username = JSON.parse(localStorage.getItem("user"))?.username || "";
+
 	const navigate = useNavigate();
 
-	function handleLogout() {
+	const handleLogout = () => {
 		localStorage.clear();
 		navigate("/login");
 	}
@@ -32,8 +31,24 @@ export default function Header() {
 								alt="cat-avatar"
 							/>
 						</div>
+						<div className="username">
+							<p>{username}</p>
+							<div className="edit-delete__container">
+								<div>
+									<Button onClick={() => navigate('/edit-profile')} className="edit-profile__btn d-flex justify-content-start align-items-center">
+										<i className="fa-solid fa-user-pen"></i>
+										Edit your profile
+									</Button>
+								</div>
 
-						<p className="username">{username}</p>
+								<div>
+									<Button className="delete-account__btn d-flex justify-content-start align-items-center">
+										<i className="fa-solid fa-trash"></i>
+										Delete account
+									</Button>
+								</div>
+							</div>
+						</div>
 					</div>
 
 					<Button onClick={handleLogout} className="btn--logout">

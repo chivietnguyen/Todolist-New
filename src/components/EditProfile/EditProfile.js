@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
+import { useState, useRef, useEffect } from "react";
 import axios from "../../api/axios";
-import { USER_REGEX, checkPassword } from "../../helper";
-import { LOGIN_URL, registerPage } from "../../path";
 
-import "./LoginForm.css";
+import "./EditProfile.css";
 
-export default function LoginForm() {
+const USER_REGEX = /^\w+$/;
+
+export default function EditProfile() {
+	const userRef = useRef();
+	const errRef = useRef();
+    const navigate = useNavigate()
+
 	const [username, setUsername] = useState();
 	const [validName, setValidName] = useState(false);
 	const [userFocus, setUserFocus] = useState(false);
@@ -16,26 +21,38 @@ export default function LoginForm() {
 	const [validPassword, setValidPassword] = useState(false);
 	const [passwordFocus, setPasswordFocus] = useState(false);
 
-	const [errMsg, setErrMsg] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState();
+	const [validConfirmPwd, setValidConfirmPwd] = useState(false);
+	const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
 
-	const navigate = useNavigate();
+	const [errMsg, setErrMsg] = useState("");
+	const [success, setSuccess] = useState(false);
+
+	const REGISTER_URL = "/auth/register";
+
+	// Auto focus when load page for the first time
+	useEffect(() => {
+		userRef.current.focus();
+	}, []);
 
 	// Auto validate username whenever username is changed
 	useEffect(() => {
 		const result = USER_REGEX.test(username);
 		setValidName(result);
 	}, [username]);
-
 	// Auto validate password and confirm password
 	useEffect(() => {
-		const result = password ? checkPassword(password) : false;
+		const result = password ? password.length >= 6 : false;
 		setValidPassword(result);
-	}, [password]);
+
+		const match = password === confirmPassword;
+		setValidConfirmPwd(match);
+	}, [password, confirmPassword]);
 
 	// Whenever dependencies change, error message will be cleared
 	useEffect(() => {
 		setErrMsg("");
-	}, [username, password]);
+	}, [username, password, confirmPassword]);
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -49,18 +66,12 @@ export default function LoginForm() {
 		}
 
 		try {
-			var response = await axios.post(LOGIN_URL, { username, password });
+			// var response = await axios.post(REGISTER_URL, { username, password });
 
-			// When Login, save JWT to LocalStorage
-			localStorage.setItem(
-				"user",
-				JSON.stringify({ username, accessToken: response.data.token })
-			);
-
-			// Then navigate to home page
-			navigate('/home');
-
-			// setSuccess(true);
+			setSuccess(true);
+            alert("Update profile successfully!")
+            localStorage.clear()
+            navigate('/login', {replace: true})
 		} catch (err) {
 			if (!err?.response) {
 				setErrMsg("No Server Response!");
@@ -69,8 +80,9 @@ export default function LoginForm() {
 			} else if (err.response?.status === 500) {
 				setErrMsg(err.response.data.message + "!");
 			} else {
-				setErrMsg("Login Failed");
+				setErrMsg("Registration Failed");
 			}
+			errRef.current.focus(); // For Screen Reader
 		}
 	}
 
@@ -80,11 +92,11 @@ export default function LoginForm() {
 				<div className="row d-flex align-items-center justify-content-center">
 					<div className="col-lg-4 col-md-6 col-sm-8 col-10">
 						<Form className="form" onSubmit={handleSubmit}>
-							<h1>Sign in</h1>
-							<p>Sign in and start managing your life!</p>
+							<h1>Edit Profile</h1>
+							<p>Update your profile!</p>
 
 							<Form.Group className="form-group">
-								<div className={errMsg ? "errmsg" : "offscreen"}>
+								<div ref={errRef} className={errMsg ? "errmsg" : "offscreen"}>
 									<i
 										className="fa-solid fa-circle-info"
 										style={{ paddingRight: "5px" }}
@@ -93,11 +105,11 @@ export default function LoginForm() {
 								</div>
 
 								<Form.Control
-									autoFocus
+									ref={userRef}
 									value={username}
 									className={validName ? "input" : "input input--error"}
 									type="text"
-									placeholder="Enter username"
+									placeholder="Enter new username"
 									autoComplete="off"
 									required
 									onChange={(e) => setUsername(e.target.value)}
@@ -155,22 +167,50 @@ export default function LoginForm() {
 										Use more than 6 characters for your password!
 									</p>
 								</div>
+
+								<Form.Control
+									value={confirmPassword}
+									className={validConfirmPwd ? "input" : "input input--error"}
+									type="password"
+									placeholder="Confirm password"
+									required
+									onChange={(e) => setConfirmPassword(e.target.value)}
+									onFocus={() => {
+										setConfirmPasswordFocus(true);
+									}}
+									onBlur={() => {
+										setConfirmPasswordFocus(false);
+									}}
+								/>
+
+								<div
+									className={
+										confirmPassword && !validConfirmPwd
+											? "instructions"
+											: "offscreen"
+									}
+								>
+									<p>
+										<i
+											className="fa-solid fa-circle-info"
+											style={{ paddingRight: "5px" }}
+										></i>
+										Please confirm your password!
+									</p>
+								</div>
 							</Form.Group>
 
 							<Button
-								disabled={!validName || !validPassword ? true : false}
+								disabled={
+									!validName || !validPassword || !validConfirmPwd
+										? true
+										: false
+								}
 								type="submit"
-								className="button"
+								className="button button--create"
 							>
-								Sign In
+								Save changes
 							</Button>
-							<p style={{ marginTop: "15px" }}>
-								Already registered? <br />
-								<span className="line">
-									{/* Router Link here */}
-									<Link to={registerPage}>Sign Up</Link>
-								</span>
-							</p>
 						</Form>
 					</div>
 				</div>
