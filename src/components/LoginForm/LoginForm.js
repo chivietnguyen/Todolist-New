@@ -1,17 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { useState, useRef, useEffect } from "react";
 import axios from "../../api/axios";
+import { USER_REGEX, checkPassword } from "../../helper";
+import { LOGIN_URL, registerPage } from "../../path";
 
 import "./LoginForm.css";
 
-const USER_REGEX = /^\w+$/;
-
 export default function LoginForm() {
-	const userRef = useRef();
-	const errRef = useRef();
-
 	const [username, setUsername] = useState();
 	const [validName, setValidName] = useState(false);
 	const [userFocus, setUserFocus] = useState(false);
@@ -24,21 +20,15 @@ export default function LoginForm() {
 
 	const navigate = useNavigate();
 
-	const LOGIN_URL = "/auth/login";
-
-	// Auto focus when load page for the first time
-	useEffect(() => {
-		userRef.current.focus();
-	}, []);
-
 	// Auto validate username whenever username is changed
 	useEffect(() => {
 		const result = USER_REGEX.test(username);
 		setValidName(result);
 	}, [username]);
+
 	// Auto validate password and confirm password
 	useEffect(() => {
-		const result = password ? password.length >= 6 : false;
+		const result = password ? checkPassword(password) : false;
 		setValidPassword(result);
 	}, [password]);
 
@@ -60,8 +50,6 @@ export default function LoginForm() {
 
 		try {
 			var response = await axios.post(LOGIN_URL, { username, password });
-			console.log(response);
-			console.log(response.data);
 
 			// When Login, save JWT to LocalStorage
 			localStorage.setItem(
@@ -70,7 +58,6 @@ export default function LoginForm() {
 			);
 
 			// Then navigate to home page
-
 			navigate('/home');
 
 			// setSuccess(true);
@@ -84,10 +71,6 @@ export default function LoginForm() {
 			} else {
 				setErrMsg("Login Failed");
 			}
-			console.log(response);
-			console.log(err.response);
-
-			errRef.current.focus(); // For Screen Reader
 		}
 	}
 
@@ -101,7 +84,7 @@ export default function LoginForm() {
 							<p>Sign in and start managing your life!</p>
 
 							<Form.Group className="form-group">
-								<div ref={errRef} className={errMsg ? "errmsg" : "offscreen"}>
+								<div className={errMsg ? "errmsg" : "offscreen"}>
 									<i
 										className="fa-solid fa-circle-info"
 										style={{ paddingRight: "5px" }}
@@ -110,7 +93,7 @@ export default function LoginForm() {
 								</div>
 
 								<Form.Control
-									ref={userRef}
+									autoFocus
 									value={username}
 									className={validName ? "input" : "input input--error"}
 									type="text"
@@ -185,7 +168,7 @@ export default function LoginForm() {
 								Already registered? <br />
 								<span className="line">
 									{/* Router Link here */}
-									<Link to="/register">Sign Up</Link>
+									<Link to={registerPage}>Sign Up</Link>
 								</span>
 							</p>
 						</Form>
