@@ -1,17 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import { USER_REGEX, checkPassword } from "../../helper";
+import { REGISTER_URL, loginPage } from "../../path";
 
 import "./RegisterForm.css";
 
-const USER_REGEX = /^\w+$/;
-
 export default function RegisterForm() {
-	const userRef = useRef();
-	const errRef = useRef();
-
 	const [username, setUsername] = useState();
 	const [validName, setValidName] = useState(false);
 	const [userFocus, setUserFocus] = useState(false);
@@ -22,17 +19,9 @@ export default function RegisterForm() {
 
 	const [confirmPassword, setConfirmPassword] = useState();
 	const [validConfirmPwd, setValidConfirmPwd] = useState(false);
-	const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
 
 	const [errMsg, setErrMsg] = useState("");
 	const [success, setSuccess] = useState(false);
-
-	const REGISTER_URL = "/auth/register";
-
-	// Auto focus when load page for the first time
-	useEffect(() => {
-		userRef.current.focus();
-	}, []);
 
 	// Auto validate username whenever username is changed
 	useEffect(() => {
@@ -42,7 +31,7 @@ export default function RegisterForm() {
 
 	// Auto validate password and confirm password
 	useEffect(() => {
-		const result = password ? password.length >= 6 : false;
+		const result = password ? checkPassword(password) : false;
 		setValidPassword(result);
 
 		const match = password === confirmPassword;
@@ -78,7 +67,6 @@ export default function RegisterForm() {
 			} else {
 				setErrMsg("Registration Failed");
 			}
-			errRef.current.focus(); // For Screen Reader
 		}
 	}
 
@@ -93,7 +81,7 @@ export default function RegisterForm() {
 								<h1>Success!</h1>
 								<p>
 									{/* Router Link here */}
-									<Link to="/login">Sign In</Link>
+									<Link to={loginPage}>Sign In</Link>
 								</p>
 							</Form>
 						) : (
@@ -102,7 +90,7 @@ export default function RegisterForm() {
 								<p>Become our new member</p>
 
 								<Form.Group className="form-group">
-									<div ref={errRef} className={errMsg ? "errmsg" : "offscreen"}>
+									<div className={errMsg ? "errmsg" : "offscreen"}>
 										<i
 											className="fa-solid fa-circle-info"
 											style={{ paddingRight: "5px" }}
@@ -111,7 +99,7 @@ export default function RegisterForm() {
 									</div>
 
 									<Form.Control
-										ref={userRef}
+										autoFocus
 										value={username}
 										className={validName ? "input" : "input input--error"}
 										type="text"
@@ -181,12 +169,6 @@ export default function RegisterForm() {
 										placeholder="Confirm password"
 										required
 										onChange={(e) => setConfirmPassword(e.target.value)}
-										onFocus={() => {
-											setConfirmPasswordFocus(true);
-										}}
-										onBlur={() => {
-											setConfirmPasswordFocus(false);
-										}}
 									/>
 
 									<div
@@ -221,7 +203,7 @@ export default function RegisterForm() {
 									Already registered? <br />
 									<span className="line">
 										{/* Router Link here */}
-										<Link to="/login">Sign In</Link>
+										<Link to={loginPage}>Sign In</Link>
 									</span>
 								</p>
 							</Form>
