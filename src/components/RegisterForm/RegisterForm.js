@@ -23,25 +23,20 @@ export default function RegisterForm() {
 	const [errMsg, setErrMsg] = useState("");
 	const [success, setSuccess] = useState(false);
 
-	// Auto validate username whenever username is changed
 	useEffect(() => {
-		const result = USER_REGEX.test(username);
-		setValidName(result);
-	}, [username]);
+		// Auto validate username whenever username is changed
+		const usernameResultCheck = USER_REGEX.test(username)
+		setValidName(usernameResultCheck)
 
-	// Auto validate password and confirm password
-	useEffect(() => {
-		const result = password ? checkPassword(password) : false;
-		setValidPassword(result);
-
-		const match = password === confirmPassword;
+		// Auto validate password and confirm password
+		const passwordResultCheck = password ? checkPassword(password) : false
+		setValidPassword(passwordResultCheck)
+		const match = password === confirmPassword
 		setValidConfirmPwd(match);
-	}, [password, confirmPassword]);
 
-	// Whenever dependencies change, error message will be cleared
-	useEffect(() => {
+		// Whenever dependencies change, error message will be cleared
 		setErrMsg("");
-	}, [username, password, confirmPassword]);
+	}, [username, password, confirmPassword])
 
 	async function handleSubmit(e) {
 		e.preventDefault();

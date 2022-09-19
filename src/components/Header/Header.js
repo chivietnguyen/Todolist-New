@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import { loginPage } from "../../path";
+
 import "./Header.css";
 
 export default function Header() {
@@ -10,7 +12,7 @@ export default function Header() {
 
 	const handleLogout = () => {
 		localStorage.clear();
-		navigate("/login");
+		navigate(loginPage);
 	}
 
 	return (

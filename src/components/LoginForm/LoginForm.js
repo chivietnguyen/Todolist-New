@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../api/axios";
 import { USER_REGEX, checkPassword } from "../../helper";
-import { LOGIN_URL, registerPage } from "../../path";
+import { LOGIN_URL, registerPage, homePage } from "../../path";
 
 import "./LoginForm.css";
 
@@ -20,22 +20,18 @@ export default function LoginForm() {
 
 	const navigate = useNavigate();
 
-	// Auto validate username whenever username is changed
 	useEffect(() => {
-		const result = USER_REGEX.test(username);
-		setValidName(result);
-	}, [username]);
+		// Auto validate username whenever username is changed
+		const usernameResultCheck = USER_REGEX.test(username)
+		setValidName(usernameResultCheck)
 
-	// Auto validate password and confirm password
-	useEffect(() => {
-		const result = password ? checkPassword(password) : false;
-		setValidPassword(result);
-	}, [password]);
+		// Auto validate password and confirm password
+		const passwordResultCheck = password ? checkPassword(password) : false
+		setValidPassword(passwordResultCheck)
 
-	// Whenever dependencies change, error message will be cleared
-	useEffect(() => {
+		// Whenever dependencies change, error message will be cleared
 		setErrMsg("");
-	}, [username, password]);
+	}, [username, password])
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -58,7 +54,7 @@ export default function LoginForm() {
 			);
 
 			// Then navigate to home page
-			navigate('/home');
+			navigate(homePage);
 
 			// setSuccess(true);
 		} catch (err) {
