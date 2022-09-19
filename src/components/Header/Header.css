@@ -1,0 +1,29 @@
+.header-container {
+    font-family: 'Comfortaa', cursive;
+    padding: 10px 30px;
+    background-color: brown;
+}
+
+.header--logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.header--logo a,
+.header--logo a:hover,
+.header--logo a:focus
+{
+    text-decoration: none;
+    color: white;
+}
+
+
+
+.header--navbar li {
+    list-style: none;
+}
+
+.header--navbar a{
+    text-decoration: none;
+    cursor: pointer;
+}
