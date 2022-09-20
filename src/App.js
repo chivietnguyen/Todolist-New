@@ -3,7 +3,8 @@ import Header from "./components/Header/Header";
 import LoginForm from "./components/LoginForm/LoginForm";
 import RegisterForm from "./components/RegisterForm/RegisterForm";
 import Home from "./components/Home/Home";
-import EditProfile from "./components/EditProfile/EditProfile";
+import EditProfileName from "./components/EditProfile/EditProfileName";
+import { loginPage, registerPage, homePage, editProfileName } from "./path";
 
 import "normalize.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,13 +18,13 @@ function App() {
 				<Route
 					path="/"
 					element={
-						localStorage.getItem("user") ? <Navigate to="/home" /> : <Navigate to="/login" />
+						localStorage.getItem("user") ? <Navigate to={homePage} /> : <Navigate to="/login" />
 					}
 				/>
-				<Route path="/register" element={<RegisterForm />} />
-				<Route path="/login" element={<LoginForm />} />
-				<Route path="/home" element={<Home />} />
-				<Route path="/edit-profile" element={<EditProfile />}/>
+				<Route path={registerPage} element={<RegisterForm />} />
+				<Route path={loginPage} element={<LoginForm />} />
+				<Route path={homePage} element={<Home />} />
+				<Route path={editProfileName} element={<EditProfileName />}/>
 			</Routes>
 		</div>
 	);

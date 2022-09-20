@@ -1,0 +1,11 @@
+.instructions {
+    background-color: brown;
+    color: white;
+    text-align: left;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+.offscreen {
+    display: none;
+}

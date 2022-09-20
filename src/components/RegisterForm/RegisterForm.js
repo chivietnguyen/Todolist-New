@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
-import { USER_REGEX, checkPassword } from "../../helper";
+import { USER_REGEX, checkPassword, checkInputsWhenSubmit } from "../../helper";
 import { REGISTER_URL, loginPage } from "../../path";
 
 import "./RegisterForm.css";
+import Instruction from "../Instruction/Instruction";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { autoValidateConfirmPassword, autoValidatePassword, autoValidateUsername } from "../../validate";
 
 export default function RegisterForm() {
 	const [username, setUsername] = useState();
@@ -24,188 +27,126 @@ export default function RegisterForm() {
 	const [success, setSuccess] = useState(false);
 
 	useEffect(() => {
-		// Auto validate username whenever username is changed
-		const usernameResultCheck = USER_REGEX.test(username)
-		setValidName(usernameResultCheck)
-
-		// Auto validate password and confirm password
-		const passwordResultCheck = password ? checkPassword(password) : false
-		setValidPassword(passwordResultCheck)
-		const match = password === confirmPassword
-		setValidConfirmPwd(match);
-
+		autoValidateUsername(username, setValidName)
+		autoValidatePassword(password, setValidPassword)
+		autoValidateConfirmPassword(password, confirmPassword, setValidConfirmPwd)
 		// Whenever dependencies change, error message will be cleared
 		setErrMsg("");
-	}, [username, password, confirmPassword])
+	}, [username, password, confirmPassword]);
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-
-		const v1 = USER_REGEX.test(username);
-		const v2 = password ? checkPassword(password) : false;
-
-		if (!v1 || !v2) {
-			setErrMsg("Invalid Entry");
-			return;
-		}
-
+		checkInputsWhenSubmit(username, password, setErrMsg)
+		
 		try {
-			var response = await axios.post(REGISTER_URL, { username, password });
+			const response = await axios.post(REGISTER_URL, { username, password });
 			setSuccess(true);
 		} catch (err) {
-			if (!err?.response) {
-				setErrMsg("No Server Response!");
-			} else if (err.response?.status === 400) {
-				setErrMsg(err.response.data.message + "!");
-			} else if (err.response?.status === 500) {
-				setErrMsg(err.response.data.message + "!");
-			} else {
-				setErrMsg("Registration Failed");
-			}
+			setErrMsg(err.response.data.message + "!")
 		}
 	}
 
 	return (
-		<section>
-			<div className="form-container">
-				<div className="row d-flex align-items-center justify-content-center">
-					<div className="col-lg-4 col-md-6 col-sm-8 col-10">
-						{/* If success full register => go to a section has a link to move to LoginForm */}
-						{success ? (
-							<Form className="form">
-								<h1>Success!</h1>
-								<p>
-									{/* Router Link here */}
-									<Link to={loginPage}>Sign In</Link>
-								</p>
-							</Form>
-						) : (
-							<Form className="form" onSubmit={handleSubmit}>
-								<h1>Sign up</h1>
-								<p>Become our new member</p>
+		<div className="form-container row d-flex align-items-center justify-content-center">
+			<div className="col-lg-4 col-md-6 col-sm-8 col-10">
+				{/* If success full register => go to a section has a link to move to LoginForm */}
+				{success ? (
+					<Form className="form">
+						<h1>Success!</h1>
+						<p>
+							{/* Router Link here */}
+							<Link to={loginPage}>Sign In</Link>
+						</p>
+					</Form>
+				) : (
+					<Form className="form" onSubmit={handleSubmit}>
+						<h1>Sign up</h1>
+						<p>Become our new member</p>
 
-								<Form.Group className="form-group">
-									<div className={errMsg ? "errmsg" : "offscreen"}>
-										<i
-											className="fa-solid fa-circle-info"
-											style={{ paddingRight: "5px" }}
-										></i>
-										{errMsg}
-									</div>
+						<Form.Group className="form-group">
+							{errMsg && <ErrorMessage errMsg={errMsg} />}
+							<div>
+								<Form.Control
+									autoFocus
+									value={username}
+									className={validName ? "input" : "input input--error"}
+									type="text"
+									placeholder="Enter username"
+									autoComplete="off"
+									required
+									onChange={(e) => setUsername(e.target.value)}
+									onFocus={() => {
+										setUserFocus(true);
+									}}
+									onBlur={() => {
+										setUserFocus(false);
+									}}
+								/>
+								{/* if username input make error => show instruction */}
+								<Instruction
+									showInstructionCondition={userFocus && username && !validName}
+									instructions="Username is invalid!"
+								/>
+							</div>
 
-									<Form.Control
-										autoFocus
-										value={username}
-										className={validName ? "input" : "input input--error"}
-										type="text"
-										placeholder="Enter username"
-										autoComplete="off"
-										required
-										onChange={(e) => setUsername(e.target.value)}
-										onFocus={() => {
-											setUserFocus(true);
-										}}
-										onBlur={() => {
-											setUserFocus(false);
-										}}
-									/>
-									{/* if username input make error => show instruction */}
-									<div
-										className={
-											userFocus && username && !validName
-												? "instructions"
-												: "offscreen"
-										}
-									>
-										<p>
-											<i
-												className="fa-solid fa-circle-info"
-												style={{ paddingRight: "5px" }}
-											></i>
-											Username is invalid!
-										</p>
-									</div>
+							<div>
+								<Form.Control
+									value={password}
+									className={validPassword ? "input" : "input input--error"}
+									type="password"
+									placeholder="Enter password"
+									required
+									onChange={(e) => setPassword(e.target.value)}
+									onFocus={() => {
+										setPasswordFocus(true);
+									}}
+									onBlur={() => {
+										setPasswordFocus(false);
+									}}
+								/>
+								{/* if password input make error => show instruction */}
+								<Instruction
+									showInstructionCondition={passwordFocus && !validPassword}
+									instructions="Use more than 6 characters for your password!"
+								/>
+							</div>
 
-									<Form.Control
-										value={password}
-										className={validPassword ? "input" : "input input--error"}
-										type="password"
-										placeholder="Enter password"
-										required
-										onChange={(e) => setPassword(e.target.value)}
-										onFocus={() => {
-											setPasswordFocus(true);
-										}}
-										onBlur={() => {
-											setPasswordFocus(false);
-										}}
-									/>
-									{/* if password input make error => show instruction */}
-									<div
-										className={
-											passwordFocus && !validPassword
-												? "instructions"
-												: "offscreen"
-										}
-									>
-										<p>
-											<i
-												className="fa-solid fa-circle-info"
-												style={{ paddingRight: "5px" }}
-											></i>
-											Use more than 6 characters for your password!
-										</p>
-									</div>
+							<div>
+								<Form.Control
+									value={confirmPassword}
+									className={validConfirmPwd ? "input" : "input input--error"}
+									type="password"
+									placeholder="Confirm password"
+									required
+									onChange={(e) => setConfirmPassword(e.target.value)}
+								/>
 
-									<Form.Control
-										value={confirmPassword}
-										className={validConfirmPwd ? "input" : "input input--error"}
-										type="password"
-										placeholder="Confirm password"
-										required
-										onChange={(e) => setConfirmPassword(e.target.value)}
-									/>
+								<Instruction
+									showInstructionCondition={confirmPassword && !validConfirmPwd}
+									instructions="Please confirm your password!"
+								/>
+							</div>
+						</Form.Group>
 
-									<div
-										className={
-											confirmPassword && !validConfirmPwd
-												? "instructions"
-												: "offscreen"
-										}
-									>
-										<p>
-											<i
-												className="fa-solid fa-circle-info"
-												style={{ paddingRight: "5px" }}
-											></i>
-											Please confirm your password!
-										</p>
-									</div>
-								</Form.Group>
-
-								<Button
-									disabled={
-										!validName || !validPassword || !validConfirmPwd
-											? true
-											: false
-									}
-									type="submit"
-									className="button button--create"
-								>
-									Sign up
-								</Button>
-								<p>
-									Already registered? <br />
-									<span className="line">
-										{/* Router Link here */}
-										<Link to={loginPage}>Sign In</Link>
-									</span>
-								</p>
-							</Form>
-						)}
-					</div>
-				</div>
+						<Button
+							disabled={
+								!validName || !validPassword || !validConfirmPwd ? true : false
+							}
+							type="submit"
+							className="button button--create"
+						>
+							Sign up
+						</Button>
+						<p>
+							Already registered? <br />
+							<span className="line">
+								{/* Router Link here */}
+								<Link to={loginPage}>Sign In</Link>
+							</span>
+						</p>
+					</Form>
+				)}
 			</div>
-		</section>
+		</div>
 	);
 }

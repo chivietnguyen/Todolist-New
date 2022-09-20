@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
+import Instruction from "../Instruction/Instruction";
 import axios from "../../api/axios";
-import { USER_REGEX, checkPassword } from "../../helper";
+import { USER_REGEX, checkPassword, checkInputsWhenSubmit } from "../../helper";
 import { LOGIN_URL, registerPage, homePage } from "../../path";
+import { autoValidatePassword, autoValidateUsername } from "../../validate";
 
 import "./LoginForm.css";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 export default function LoginForm() {
 	const [username, setUsername] = useState();
@@ -21,156 +24,98 @@ export default function LoginForm() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		// Auto validate username whenever username is changed
-		const usernameResultCheck = USER_REGEX.test(username)
-		setValidName(usernameResultCheck)
-
-		// Auto validate password and confirm password
-		const passwordResultCheck = password ? checkPassword(password) : false
-		setValidPassword(passwordResultCheck)
-
+		autoValidateUsername(username, setValidName);
+		autoValidatePassword(password, setValidPassword);
 		// Whenever dependencies change, error message will be cleared
 		setErrMsg("");
-	}, [username, password])
+	}, [username, password]);
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-
-		const v1 = USER_REGEX.test(username);
-		const v2 = password ? checkPassword(password) : false;
-
-		if (!v1 || !v2) {
-			setErrMsg("Invalid Entry");
-			return;
-		}
+		checkInputsWhenSubmit(username, password, setErrMsg);
 
 		try {
-			var response = await axios.post(LOGIN_URL, { username, password });
-
-			// When Login, save JWT to LocalStorage
-			localStorage.setItem(
-				"user",
-				JSON.stringify({ username, accessToken: response.data.token })
-			);
-
-			// Then navigate to home page
+			const response = await axios.post(LOGIN_URL, { username, password });
+			const userInfo = {
+				username,
+				accessToken: response.data.token,
+				id: response.data.id,
+			};
+			localStorage.setItem("user", JSON.stringify(userInfo));
 			navigate(homePage);
-
-			// setSuccess(true);
 		} catch (err) {
-			if (!err?.response) {
-				setErrMsg("No Server Response!");
-			} else if (err.response?.status === 400) {
-				setErrMsg(err.response.data.message + "!");
-			} else if (err.response?.status === 500) {
-				setErrMsg(err.response.data.message + "!");
-			} else {
-				setErrMsg("Login Failed");
-			}
+			setErrMsg(err.response.data.message + "!");
 		}
 	}
 
 	return (
-		<section>
-			<div className="form-container">
-				<div className="row d-flex align-items-center justify-content-center">
-					<div className="col-lg-4 col-md-6 col-sm-8 col-10">
-						<Form className="form" onSubmit={handleSubmit}>
-							<h1>Sign in</h1>
-							<p>Sign in and start managing your life!</p>
+		<div className="form-container row d-flex align-items-center justify-content-center">
+			<div className="col-lg-4 col-md-6 col-sm-8 col-10">
+				<Form className="form" onSubmit={handleSubmit}>
+					<h1>Sign in</h1>
+					<p>Sign in and start managing your life!</p>
 
-							<Form.Group className="form-group">
-								<div className={errMsg ? "errmsg" : "offscreen"}>
-									<i
-										className="fa-solid fa-circle-info"
-										style={{ paddingRight: "5px" }}
-									></i>
-									{errMsg}
-								</div>
+					<Form.Group className="form-group">
+						{errMsg && <ErrorMessage errMsg={errMsg} />}
+						<div>
+							<Form.Control
+								autoFocus
+								value={username}
+								className={validName ? "input" : "input input--error"}
+								type="text"
+								placeholder="Enter username"
+								onChange={(e) => setUsername(e.target.value)}
+								onFocus={() => {
+									setUserFocus(true);
+								}}
+								onBlur={() => {
+									setUserFocus(false);
+								}}
+							/>
+							{/* if username input make error => show instruction */}
+							<Instruction
+								showInstructionCondition={userFocus && username && !validName}
+								instructions="Username is invalid!"
+							/>
+						</div>
 
-								<Form.Control
-									autoFocus
-									value={username}
-									className={validName ? "input" : "input input--error"}
-									type="text"
-									placeholder="Enter username"
-									autoComplete="off"
-									required
-									onChange={(e) => setUsername(e.target.value)}
-									onFocus={() => {
-										setUserFocus(true);
-									}}
-									onBlur={() => {
-										setUserFocus(false);
-									}}
-								/>
-								{/* if username input make error => show instruction */}
-								<div
-									className={
-										userFocus && username && !validName
-											? "instructions"
-											: "offscreen"
-									}
-								>
-									<p>
-										<i
-											className="fa-solid fa-circle-info"
-											style={{ paddingRight: "5px" }}
-										></i>
-										Username is invalid!
-									</p>
-								</div>
+						<div>
+							<Form.Control
+								value={password}
+								className={validPassword ? "input" : "input input--error"}
+								type="password"
+								placeholder="Enter password"
+								onChange={(e) => setPassword(e.target.value)}
+								onFocus={() => {
+									setPasswordFocus(true);
+								}}
+								onBlur={() => {
+									setPasswordFocus(false);
+								}}
+							/>
+							{/* if password input make error => show instruction */}
+							<Instruction
+								showInstructionCondition={passwordFocus && !validPassword}
+								instructions="Use more than 6 characters for your password!"
+							/>
+						</div>
+					</Form.Group>
 
-								<Form.Control
-									value={password}
-									className={validPassword ? "input" : "input input--error"}
-									type="password"
-									placeholder="Enter password"
-									required
-									onChange={(e) => setPassword(e.target.value)}
-									onFocus={() => {
-										setPasswordFocus(true);
-									}}
-									onBlur={() => {
-										setPasswordFocus(false);
-									}}
-								/>
-								{/* if password input make error => show instruction */}
-								<div
-									className={
-										passwordFocus && !validPassword
-											? "instructions"
-											: "offscreen"
-									}
-								>
-									<p>
-										<i
-											className="fa-solid fa-circle-info"
-											style={{ paddingRight: "5px" }}
-										></i>
-										Use more than 6 characters for your password!
-									</p>
-								</div>
-							</Form.Group>
-
-							<Button
-								disabled={!validName || !validPassword ? true : false}
-								type="submit"
-								className="button"
-							>
-								Sign In
-							</Button>
-							<p style={{ marginTop: "15px" }}>
-								Already registered? <br />
-								<span className="line">
-									{/* Router Link here */}
-									<Link to={registerPage}>Sign Up</Link>
-								</span>
-							</p>
-						</Form>
-					</div>
-				</div>
+					<Button
+						disabled={!validName || !validPassword ? true : false}
+						type="submit"
+						className="button"
+					>
+						Sign In
+					</Button>
+					<p style={{ marginTop: "15px" }}>
+						Already registered? <br />
+						<span className="line">
+							<Link to={registerPage}>Sign Up</Link>
+						</span>
+					</p>
+				</Form>
 			</div>
-		</section>
+		</div>
 	);
 }
