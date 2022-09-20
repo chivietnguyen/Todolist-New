@@ -1,0 +1,7 @@
+.input.input-optional {
+    background-color: rgb(172, 172, 172);
+}
+
+.input.input-optional:focus {
+    background-color: white;
+}

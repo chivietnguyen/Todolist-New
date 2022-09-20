@@ -1,0 +1,127 @@
+.header--navbar a {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.cat-avatar {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	overflow: hidden;
+}
+
+.cat-avatar img {
+	width: 100%;
+}
+
+.user--display {
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.btn--logout {
+	background-color: transparent !important;
+	border: none !important;
+	font-weight: bold !important;
+	transition: 0.3s ease;
+}
+
+.btn--logout:hover {
+	background-color: white !important;
+	color: brown !important;
+	transform: scale(1.1);
+}
+
+.username {
+	position: relative;
+}
+
+.username:hover .edit-delete__container {
+	display: block;
+}
+
+.username p {
+	margin: 0 !important;
+}
+
+.username p::after {
+	content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 20px;
+    color: black;
+    display: none;
+}
+
+.username p:hover {
+	text-decoration: underline;
+}
+
+.username p:hover::after {
+	display: block;
+}
+
+.edit-delete__container {
+	background-color: white;
+	padding: 10px;
+	border-radius: 10px;
+    box-shadow: 3px 2px 5px 2px rgb(181, 181, 181);
+	position: absolute;
+	width: 230px;
+	top: 43px;
+	left: 50%;
+	transform: translateX(-50%);
+    display: none;
+}
+
+.edit-delete__container::before {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid white;
+    scale: 2.5;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.edit-profile__btn,
+.delete-account__btn {
+	width: 100%;
+	font-weight: bold !important;
+}
+
+.edit-profile__btn {
+	background-color: darkgray !important;
+	border-color: darkgray !important;
+}
+
+.edit-profile__btn:hover {
+	background-color: #0d6efd !important;
+	border-color: #0d6efd !important;
+}
+
+.delete-account__btn {
+	margin-top: 10px;
+	background-color: red !important;
+	border-color: red !important;
+}
+
+.delete-account__btn:hover {
+	opacity: 0.7;
+	background-color: red !important;
+	border-color: red !important;
+}
+
+.edit-profile__btn i {
+	margin-right: 10px;
+}
+
+.delete-account__btn i {
+	margin-right: 16px;
+}
