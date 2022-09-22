@@ -7,4 +7,4 @@ export const userUrl = (id) => {
 export const loginPage = '/login'
 export const registerPage = '/register'
 export const homePage = '/home'
-export const editProfileName = '/edit-profile-name'
+export const editProfile = '/edit-profile'

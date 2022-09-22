@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import axios from "../../api/axios";
-import { loginPage, userUrl, editProfileName } from "../../path";
+import { api } from "../../api/axios";
+import { loginPage, userUrl, editProfile } from "../../path";
 
 import "./Navbar.css";
 
@@ -11,7 +11,7 @@ export default function Navbar({ username, handleLogout, navigate }) {
         const token = JSON.parse(localStorage.getItem('user')).accessToken
         
         try {
-            const response = await axios.delete(userUrl(userId), { headers: {"Authorization" : `Bearer ${token}`}})
+            const response = await api.delete(userUrl(userId), { headers: {"Authorization" : `Bearer ${token}`}})
             localStorage.clear()
             navigate(loginPage)
         } catch (err) {
@@ -36,7 +36,7 @@ export default function Navbar({ username, handleLogout, navigate }) {
 					<div className="edit-delete__container">
 						<div>
 							<Button
-								onClick={() => navigate(editProfileName)}
+								onClick={() => navigate(editProfile)}
 								className="edit-profile__btn d-flex justify-content-start align-items-center"
 							>
 								<i className="fa-solid fa-user-pen"></i>

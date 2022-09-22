@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import axios from "../../api/axios";
-import { USER_REGEX, checkPassword, checkInputsWhenSubmit } from "../../helper";
+import { api } from "../../api/axios";
+import { checkInputsWhenSubmit } from "../../helper";
 import { REGISTER_URL, loginPage } from "../../path";
 
 import "./RegisterForm.css";
@@ -39,10 +39,10 @@ export default function RegisterForm() {
 		checkInputsWhenSubmit(username, password, setErrMsg)
 		
 		try {
-			const response = await axios.post(REGISTER_URL, { username, password });
+			await api.post(REGISTER_URL, { username, password });
 			setSuccess(true);
 		} catch (err) {
-			setErrMsg(err.response.data.message + "!")
+			setErrMsg(err.response.data.error.message + "!")
 		}
 	}
 

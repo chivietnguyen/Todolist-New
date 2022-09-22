@@ -2,16 +2,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import { loginPage, userUrl } from "../../path";
-import axios from "../../api/axios";
-import { checkInputsWhenSubmit, checkPassword, USER_REGEX } from "../../helper";
+import { homePage, loginPage, userUrl } from "../../path";
+import { api } from "../../api/axios";
+import { checkInputsWhenSubmit } from "../../helper";
 import { autoValidateUsername, autoValidatePassword } from "../../validate";
 
 import "./EditProfileName.css";
 import Instruction from "../Instruction/Instruction";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
-export default function EditProfileName() {
+export default function EditProfile() {
 	const navigate = useNavigate();
 
 	const [newUsername, setNewUsername] = useState();
@@ -36,20 +36,17 @@ export default function EditProfileName() {
 		checkInputsWhenSubmit(newUsername, newPassword, setErrMsg);
 
 		const userId = JSON.parse(localStorage.getItem("user")).id;
-		const token = JSON.parse(localStorage.getItem("user")).accessToken;
 
 		try {
-			const response = await axios.patch(
-				userUrl(userId),
-				{ username: newUsername, newPassword },
-				{ headers: { Authorization: `Bearer ${token}` } }
-			);
+			await api.patch(userUrl(userId), { username: newUsername, newPassword })
+					.then(response => console.log(response));
+			localStorage.clear()
 			alert("Update profile successfully!");
+			navigate(loginPage);
 		} catch (err) {
-			setErrMsg(err.response.data.message);
+			console.log(err)
+			setErrMsg(err.response.data.error.message + "!");
 		}
-		localStorage.clear();
-		navigate(loginPage);
 	};
 
 	return (

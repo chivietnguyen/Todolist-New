@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Instruction from "../Instruction/Instruction";
-import axios from "../../api/axios";
-import { USER_REGEX, checkPassword, checkInputsWhenSubmit } from "../../helper";
+import { api } from "../../api/axios";
+import { checkInputsWhenSubmit } from "../../helper";
 import { LOGIN_URL, registerPage, homePage } from "../../path";
 import { autoValidatePassword, autoValidateUsername } from "../../validate";
 
@@ -35,16 +35,16 @@ export default function LoginForm() {
 		checkInputsWhenSubmit(username, password, setErrMsg);
 
 		try {
-			const response = await axios.post(LOGIN_URL, { username, password });
+			const response = await api.post(LOGIN_URL, { username, password });
 			const userInfo = {
 				username,
-				accessToken: response.data.token,
-				id: response.data.id,
+				accessToken: response.data.data.accessToken,
+				id: response.data.data.id,
 			};
 			localStorage.setItem("user", JSON.stringify(userInfo));
 			navigate(homePage);
 		} catch (err) {
-			setErrMsg(err.response.data.message + "!");
+			setErrMsg(err.response.data.error.message + "!");
 		}
 	}
 
